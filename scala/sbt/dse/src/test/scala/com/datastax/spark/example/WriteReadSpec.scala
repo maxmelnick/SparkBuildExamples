@@ -1,6 +1,7 @@
 package com.datastax.spark.example
 
 
+import com.datastax.driver.dse.DseSession
 import com.datastax.spark.connector._
 import com.datastax.spark.connector.embedded._
 import com.datastax.spark.connector.cql.CassandraConnector
@@ -30,6 +31,12 @@ class WriteReadSpec extends FlatSpec with EmbeddedCassandra with SparkTemplate w
   "We" should "be able to access our Embedded Cassandra Node" in {
     connector
       .withSessionDo(session => session.execute("SELECT * FROM system_schema.tables"))
+      .all() should not be empty
+  }
+
+  it should "be able to cast Cassandra Session to DseSession" in {
+    connector
+      .withSessionDo(session => session.asInstanceOf[DseSession].executeGraph("system.graphs()"))
       .all() should not be empty
   }
 
